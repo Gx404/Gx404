@@ -1,0 +1,10 @@
+.sites-runtime/
+node_modules/
+*.log
+*.tar.gz
+qa/
+
+preview.log
+preview.out.log
+preview.err.log
+
