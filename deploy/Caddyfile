@@ -1,11 +1,21 @@
 gx404.cn, www.gx404.cn {
     encode zstd gzip
+    @photography path /gallery /gallery/* /curated /curated/* /story /story/* /blog /blog/* /about /about/* /they /they/* /login /login/* /admin /admin/* /uploads/*
+    redir @photography https://ph.gx404.cn{uri} 308
     root * /home/gx404/apps/gx404-home/dist
     file_server
 }
 
 ph.gx404.cn {
     encode zstd gzip
+    # The current gallery image contains a robots.txt generated before migration.
+    respond /robots.txt "User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://ph.gx404.cn/sitemap.xml
+" 200
     reverse_proxy 127.0.0.1:3001
 }
 
