@@ -44,7 +44,35 @@
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let engine;
   let unavailable = false;
+  let introPlayed = false;
+  let introTimer = null;
   const paused = () => motionQuery.matches;
+
+  function stopIntro() {
+    window.clearTimeout(introTimer);
+    introTimer = null;
+  }
+
+  function playIntro() {
+    if (introPlayed || introTimer !== null || !engine || paused() || document.hidden || unavailable) return;
+    const hero = document.querySelector('.hero');
+    const count = window.innerWidth < 600 ? 3 : 4;
+    let index = 0;
+    function splash() {
+      introTimer = null;
+      if (!engine || paused() || document.hidden || unavailable) return;
+      introPlayed = true;
+      const bounds = hero.getBoundingClientRect();
+      // Spread the opening colors across the hero, away from navigation links.
+      const x = bounds.left + bounds.width * (0.14 + 0.72 * (index + Math.random()) / count);
+      const y = bounds.top + bounds.height * (0.2 + Math.random() * 0.5);
+      engine.start('intro', x, y);
+      engine.end('intro');
+      index += 1;
+      if (index < count) introTimer = window.setTimeout(splash, 240);
+    }
+    splash();
+  }
 
   function initialise() {
     if (engine || unavailable || motionQuery.matches) return;
@@ -59,16 +87,20 @@
   }
 
   function updateMotion() {
-    if (!paused()) initialise();
+    if (!paused() && !document.hidden) initialise();
     engine?.setPaused(paused() || document.hidden);
     document.body.classList.toggle('motion-paused', paused() || document.hidden);
     hint.hidden = paused() || unavailable;
+    if (paused() || document.hidden || unavailable) stopIntro();
+    else playIntro();
   }
 
   const activePointers = new Set();
   window.addEventListener('pointerdown', event => {
     if (paused() || unavailable || (event.pointerType === 'mouse' && event.button !== 0)) return;
     if (event.target instanceof Element && event.target.closest('a, button, input, textarea, select, [role="button"]')) return;
+    introPlayed = true;
+    stopIntro();
     activePointers.add(event.pointerId);
     engine?.start(event.pointerId, event.clientX, event.clientY);
     document.body.classList.add('has-interacted');
@@ -98,6 +130,7 @@
   motionQuery.addEventListener('change', updateMotion);
   canvas.addEventListener('webglcontextlost', event => {
     event.preventDefault();
+    stopIntro();
     engine?.setPaused(true);
     engine = undefined;
     unavailable = true;
