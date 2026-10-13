@@ -5,10 +5,10 @@ window.GX404_SITE = Object.freeze({
   intro: '用光影记录生活，用好奇探索世界。',
   icp: { label: '陇ICP备2025022641号', url: 'https://beian.miit.gov.cn/' },
   links: [
-    { name: '摄影作品', url: 'https://ph.gx404.cn/', icon: '📷' },
-    { name: '会员看板', url: 'https://vip.gx404.cn/', icon: '👑' },
-    { name: '服务器探针', url: 'https://vps.gx404.cn/', icon: '🌏' },
-    { name: '文件互传', url: 'https://ios.gx404.cn/', icon: '📤' },
+    { name: '摄影', url: 'https://ph.gx404.cn/', icon: '📷' },
+    { name: '会员', url: 'https://vip.gx404.cn/', icon: '👑' },
+    { name: '探针', url: 'https://vps.gx404.cn/', icon: '🌏' },
+    { name: '互传', url: 'https://ios.gx404.cn/', icon: '📤' },
   ],
 });
 
