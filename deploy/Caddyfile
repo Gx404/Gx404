@@ -1,0 +1,29 @@
+gx404.cn, www.gx404.cn {
+    encode zstd gzip
+    root * /home/gx404/apps/gx404-home/dist
+    file_server
+}
+
+ph.gx404.cn {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:3001
+}
+
+vps.gx404.cn {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:25774
+}
+
+vip.gx404.cn {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8080
+}
+
+ios.gx404.cn {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:3002 {
+        header_up -CF-Connecting-IP
+        header_up X-Forwarded-For {remote_host}
+    }
+}
+
