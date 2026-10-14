@@ -92,7 +92,7 @@
     document.body.classList.toggle('motion-paused', paused() || document.hidden);
     hint.hidden = paused() || unavailable;
     if (paused() || document.hidden || unavailable) stopIntro();
-    else playIntro();
+    else { engine?.wake(); playIntro(); }
   }
 
   const activePointers = new Set();
@@ -128,6 +128,13 @@
     updateMotion();
   });
   motionQuery.addEventListener('change', updateMotion);
+  window.addEventListener('focus', updateMotion);
+  window.addEventListener('pageshow', updateMotion);
+  window.addEventListener('pagehide', () => {
+    stopIntro();
+    activePointers.clear();
+    engine?.setPaused(true);
+  });
   canvas.addEventListener('webglcontextlost', event => {
     event.preventDefault();
     stopIntro();

@@ -1421,6 +1421,10 @@ return {
         pointers.forEach(pointer => { pointer.down = false; pointer.moved = false; });
         if (!config.PAUSED && Date.now() < activeUntil) wake();
     },
+    wake () {
+        if (config.PAUSED || document.hidden || gl.isContextLost()) return;
+        wake();
+    },
     resize () {
         if (gl.isContextLost()) return;
         if (resizeCanvas()) initFramebuffers();
