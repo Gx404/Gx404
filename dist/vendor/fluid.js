@@ -434,9 +434,9 @@ const displayShaderSource = `
     #endif
 
     #ifdef BLOOM
-        float noise = texture2D(uDithering, vUv * ditherScale).r;
-        noise = noise * 2.0 - 1.0;
-        bloom += noise / 255.0;
+        // Keep the bloom pass smooth on dark backgrounds. The upstream demo
+        // uses a dither texture for 8-bit banding; the random fallback texture
+        // used by this standalone adapter becomes visible as grain when dye fades.
         bloom = linearToGamma(bloom);
         c += bloom;
     #endif
@@ -1459,5 +1459,6 @@ return {
     },
 };
 };
+
 
 
