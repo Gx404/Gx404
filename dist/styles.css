@@ -20,7 +20,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #a8d4e1; outline-offs
     radial-gradient(ellipse 34% 36% at 50% 38%, #11324225 0%, transparent 100%),
     radial-gradient(ellipse 70% 60% at 48% 114%, #17314032 0%, transparent 100%);
 }
-#fluid-background { opacity: .95; }
+#fluid-background { opacity: 1; }
 .grain {
   opacity: .028;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23n)' opacity='.7' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
@@ -121,4 +121,5 @@ h1 {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .site-link:hover, .site-link:focus-visible { transform: none; }
 }
+
 

@@ -30,23 +30,23 @@ resizeCanvas();
 
 let config = {
     SIM_RESOLUTION: 128,
-    DYE_RESOLUTION: 768,
+    DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
-    DENSITY_DISSIPATION: 0.75,
+    DENSITY_DISSIPATION: 1,
     VELOCITY_DISSIPATION: 0.2,
     PRESSURE: 0.8,
-    PRESSURE_ITERATIONS: 16,
+    PRESSURE_ITERATIONS: 20,
     CURL: 30,
     SPLAT_RADIUS: 0.25,
     SPLAT_FORCE: 6000,
     SHADING: true,
     COLORFUL: true,
-    COLOR_UPDATE_SPEED: 2,
-    PAUSED: true,
+    COLOR_UPDATE_SPEED: 10,
+    PAUSED: false,
     BACK_COLOR: { r: 0, g: 0, b: 0 },
     TRANSPARENT: false,
     BLOOM: true,
-    BLOOM_ITERATIONS: 6,
+    BLOOM_ITERATIONS: 8,
     BLOOM_RESOLUTION: 256,
     BLOOM_INTENSITY: 0.8,
     BLOOM_THRESHOLD: 0.6,
@@ -994,7 +994,6 @@ initFramebuffers();
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
 let animationFrame = 0;
-let activeUntil = 0;
 render(null);
 
 function update () {
@@ -1006,10 +1005,11 @@ function update () {
     applyInputs();
     step(dt);
     render(null);
-    if (Date.now() < activeUntil) animationFrame = requestAnimationFrame(update);
+    if (!config.PAUSED && !document.hidden && !gl.isContextLost()) {
+        animationFrame = requestAnimationFrame(update);
+    }
 }
 function wake () {
-    activeUntil = Date.now() + 20000;
     if (!animationFrame && !config.PAUSED && !document.hidden) {
         lastUpdateTime = Date.now();
         animationFrame = requestAnimationFrame(update);
@@ -1419,7 +1419,7 @@ return {
         cancelAnimationFrame(animationFrame);
         animationFrame = 0;
         pointers.forEach(pointer => { pointer.down = false; pointer.moved = false; });
-        if (!config.PAUSED && Date.now() < activeUntil) wake();
+        if (!config.PAUSED) wake();
     },
     wake () {
         if (config.PAUSED || document.hidden || gl.isContextLost()) return;
@@ -1459,4 +1459,5 @@ return {
     },
 };
 };
+
 
