@@ -1,6 +1,6 @@
 # Gx404 个人导航
 
-页面打开时自动出现几处随机彩色流体，中央标题随背景变色，下方提供彩色表情导航。底栏保留版权和工信部备案链接。页面不依赖第三方字体、图片、分析服务或运行时软件包。
+Gx404 主站是一个纯静态导航页面，展示摄影、会员看板、服务器探针和文件互传四个独立子站。页面支持彩色 WebGL 流体、移动端布局和减少动态效果偏好。
 
 ## 内容
 
@@ -9,30 +9,46 @@
 - 服务器探针：https://vps.gx404.cn/
 - 文件互传：https://ios.gx404.cn/
 
-Sub 是下载转发服务，不展示为独立页面。摄影新域名由用户指定为 `ph.gx404.cn`。
+Sub 是 CDN 下载转发服务，不作为导航入口。摄影站使用 `ph.gx404.cn`。
 
-## 维护与预览
+## 本地预览
 
-修改 `dist/site.config.js` 可以更新标题、介绍、站点入口和备案信息。`dist/index.html` 保留了无 JavaScript 时可使用的静态入口，修改链接时也应同步更新该文件。
+修改 `dist/site.config.js` 可以更新标题、介绍、站点入口和备案信息；修改链接时也同步检查 `dist/index.html` 的无 JavaScript 入口。
 
-运行 `node preview.mjs`，然后打开终端给出的本地地址。发布静态文件时上传 `dist` 中的全部文件即可，不需要构建或数据库。
+```sh
+node preview.mjs
+```
 
-## 部署
+然后打开终端显示的本地地址。页面没有后端、数据库或运行时依赖。
 
-正式入口已经切换：`gx404.cn` 直接提供 `dist/`，摄影应用通过 `ph.gx404.cn` 反向代理到原有服务。现有摄影容器、数据库和上传目录保持不变。
+## 容器部署
 
-服务器源码位于 `/home/gx404/apps/gx404-home`，使用 [`deploy/Caddyfile`](deploy/Caddyfile)。修改完成后先提交到本仓库，再在服务器快进更新；只更新静态页面时无需重启。仓库推送不会自动部署。修改路由时，备份 `/etc/caddy/Caddyfile`，验证新配置，再安装到该路径并重新加载 Caddy，确保服务器重启后仍有效。
+仓库提供通用 Nginx 容器和 Compose 配置：
 
-旧摄影页面与上传图片路径会以 308 跳转到 `ph.gx404.cn`，保留路径和查询参数。摄影应用的域名设置见 [`deploy/photography.compose.yml`](deploy/photography.compose.yml)，它叠加到现有摄影 Compose 配置之后，仅调整公开站点地址。当前摄影镜像的 `robots.txt` 是构建时生成的，因此由 Caddy 提供正确的新站点地图地址。
+```sh
+git clone https://github.com/Gx404/light.git gx404-home
+cd gx404-home
+docker compose up -d --build
+```
 
-摄影应用继续使用原有镜像、启动方式和数据卷。更新公开域名时只重新创建应用服务，不构建镜像、不启动数据库初始化。首次切换前的 Caddy 配置保留在服务器 `/home/gx404/backups/gx404-home/Caddyfile.before-20261013`。`sub.gx404.cn` 仍是 CDN 下载转发，不作为网页入口。
+默认端口是 `8080`，健康检查地址是 `/healthz`。也可以使用 GHCR 预构建镜像：
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.ghcr.yml pull
+docker compose -f docker-compose.yml -f docker-compose.ghcr.yml up -d
+```
+
+完整的端口、HTTPS、更新和回滚说明见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。主分支由 [.github/workflows/container.yml](.github/workflows/container.yml) 发布 `ghcr.io/gx404/gx404-home`。
+
+## 生产反向代理
+
+容器只提供主站静态页面。需要绑定域名时，在自己的 Caddy、Nginx 或其他反向代理中把 HTTPS 流量转发到容器端口。仓库中的 `deploy/Caddyfile` 是 Gx404 现网路由示例，包含专用子站上游，不应原样复制到其他服务器。
+
+摄影、会员、VPS 和互传继续作为独立子域名运行，不会被主站容器合并。
 
 ## 已验证
 
-- 桌面端显示中央标题和底部四个入口；首次打开时自动产生一轮随机色彩，手机 3 处、桌面 4 处，之后仍可点击和拖动互动。
-- 390 × 844 与 320 × 640 手机布局无横向溢出，四个入口完整可见。
-- 点击、拖动背景会出现彩色 WebGL 流体；标题使用混色呈现背景颜色，并遵循系统减少动态效果偏好。
-- `gx404.cn`、`ph.gx404.cn`、`vip.gx404.cn`、`vps.gx404.cn`、`ios.gx404.cn` 均返回 HTTP 200。
+- 桌面端和 390 × 844、320 × 640 手机布局通过。
+- 点击、拖动背景和减少动态效果偏好通过。
 - `app.js` 与 `dist/vendor/fluid.js` 通过语法检查。
-
-
+- 容器首页返回 `Gx404-首页`，`/healthz` 返回 `ok`。

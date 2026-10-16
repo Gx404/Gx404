@@ -1,0 +1,15 @@
+.git
+.github
+.codex
+.agents
+.tmp
+node_modules
+npm-debug.log
+*.log
+*.png
+*.jpg
+*.jpeg
+*.webp
+tests
+README.preview.html
+

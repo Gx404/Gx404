@@ -1,0 +1,5 @@
+services:
+  gx404-home:
+    image: ghcr.io/gx404/gx404-home:latest
+    build: null
+
