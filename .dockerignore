@@ -6,10 +6,5 @@
 node_modules
 npm-debug.log
 *.log
-*.png
-*.jpg
-*.jpeg
-*.webp
 tests
 README.preview.html
-
